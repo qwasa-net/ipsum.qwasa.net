@@ -1,0 +1,9 @@
+#
+*.py[ocd]
+__pycache__
+
+# IDE
+.vscode
+.editorconfig
+.jsbeautifyrc
+.settings
