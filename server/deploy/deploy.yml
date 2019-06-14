@@ -1,0 +1,66 @@
+- hosts: ipsum.qwasa.net
+
+  tasks:
+    - name: create user ipsum.qwasa.net
+      user:
+        name: ipsum.qwasa.net
+        shell: /bin/false
+        home: /home/ipsum.qwasa.net
+        create_home: yes
+        group: www-data
+
+    - name: create directory
+      file:
+        path: /home/ipsum.qwasa.net/ipsum
+        state: directory
+        owner: ipsum.qwasa.net
+        group: www-data
+        mode: "0775"
+
+    - name: copy files
+      copy:
+        src: "../../{{ item }}"
+        dest: "/home/ipsum.qwasa.net/ipsum/{{ item }}"
+        backup: no
+        force: yes
+        owner: "ipsum.qwasa.net"
+        group: "www-data"
+        mode: "0664"
+        directory_mode: "0775"
+      with_items:
+        - ipsum.py
+        - server/
+
+    - name: link nginx
+      file:
+        src: /home/ipsum.qwasa.net/ipsum/server/nginx.conf
+        dest: /etc/nginx/sites-enabled/ipsum.qwasa.net.conf
+        owner: ipsum.qwasa.net
+        group: www-data
+        state: link
+
+    - name: link uswgi
+      file:
+        src: /home/ipsum.qwasa.net/ipsum/server/uwsgi.ini
+        dest: /etc/uwsgi-emperor/vassals/ipsum.qwasa.net.ini
+        owner: ipsum.qwasa.net
+        group: www-data
+        state: link
+
+    - name: clear cache
+      file:
+        path: /home/ipsum.qwasa.net/ipsum/__pycache__
+        state: absent
+
+    - name: restart nginx and uswgi
+      systemd:
+        name: "{{item}}"
+        state: restarted
+      loop:
+        - nginx
+        - uwsgi-emperor
+
+    - name: test
+      uri:
+        url: https://ipsum.qwasa.net/
+        return_content: yes

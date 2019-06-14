@@ -1,0 +1,6 @@
+servers:
+  hosts:
+    ipsum.qwasa.net:
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_ssh_host: ipsum.qwasa.net
+      ansible_ssh_pipelining: yes
